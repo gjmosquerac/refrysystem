@@ -11,29 +11,32 @@ class OrdenServicioController extends Controller
      * Almacena una nueva orden de servicio desde el formulario de campo interno.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'equipo_id' => 'required|exists:equipos,id',
-        'tipo_servicio' => 'required|string',
-        'diagnostico_tecnico' => 'required|string',
-        'trabajo_realizado' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'equipo_id' => 'required|exists:equipos,id',
+            'tipo_servicio' => 'required|string',
+            'diagnostico_tecnico' => 'required|string',
+            'trabajo_realizado' => 'required|string',
+        ]);
 
-    OrdenServicio::create([
-        'equipo_id' => $request->equipo_id,
-        'tipo_servicio' => $request->tipo_servicio,
-        'presion_baja' => $request->presion_baja,
-        'presion_alta' => $request->presion_alta,
-        'voltaje_entrada' => $request->voltaje_entrada,
-        'amperaje_trabajo' => $request->amperaje_trabajo,
-        'diagnostico_tecnico' => $request->diagnostico_tecnico,
-        'trabajo_realizado' => $request->trabajo_realizado,
-        'user_id' => 1, // <--- ¡AQUÍ ESTÁ LA SOLUCIÓN AL ERROR DE SQL!
-        'tecnico_id' => 1,
-    ]);
+        // Obtiene el ID del usuario logueado o busca el primer usuario disponible de forma segura
+        $userId = \Illuminate\Support\Facades\Auth::id() ?? (\App\Models\User::first()->id ?? 1);
 
-    return redirect()->route('ordenes.index')->with('success', '¡Orden de servicio guardada con éxito!');
-}
+        OrdenServicio::create([
+            'equipo_id' => $request->equipo_id,
+            'tipo_servicio' => $request->tipo_servicio,
+            'presion_baja' => $request->presion_baja,
+            'presion_alta' => $request->presion_alta,
+            'voltaje_entrada' => $request->voltaje_entrada,
+            'amperaje_trabajo' => $request->amperaje_trabajo,
+            'diagnostico_tecnico' => $request->diagnostico_tecnico,
+            'trabajo_realizado' => $request->trabajo_realizado,
+            'user_id' => $userId,
+            'tecnico_id' => $userId,
+        ]);
+
+        return redirect()->route('ordenes.index')->with('success', '¡Orden de servicio guardada con éxito!');
+    }
 
     /**
      * Muestra la vista del formulario público para que el cliente solicite servicio.
