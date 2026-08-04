@@ -101,11 +101,12 @@ class OrdenServicioController extends Controller
             ]
         );
 
-        // 2. Registrar el equipo asociado con parámetros base de refrigeración
+        // 2. Registrar el equipo asociado con la falla del cliente
         $equipo = Equipo::create([
             'cliente_id' => $cliente->id,
             'tipo_equipo' => $request->tipo_equipo ?? 'Aire Acondicionado / Nevera',
             'marca' => $request->marca ?? 'Genérica / Por definir',
+            'refrigerante' => 'R22/R410A', // <--- AGREGA ESTA LÍNEA PARA CUMPLIR CON LA RESTRICCIÓN DE LA BD
         ]);
 
         // 3. Generar la orden inicial con estatus operativo pendiente
