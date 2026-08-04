@@ -116,6 +116,7 @@ class OrdenServicioController extends Controller
 
         $telefonoAdmin = "58424194489"; 
 
+        // Armamos el texto plano sin funciones raras que doble-codifiquen
         $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
                    "*Cliente:* {$cliente->nombre}\n" .
                    "*Teléfono:* {$cliente->telefono}\n" .
@@ -125,7 +126,9 @@ class OrdenServicioController extends Controller
                    "*Falla Reportada:* {$request->falla}\n\n" .
                    "_Atiende la orden desde el sistema web._";
 
-        $urlWhatsApp = "https://api.whatsapp.com/send?phone={$telefonoAdmin}&text=" . rawurlencode($mensaje);
+        // Reemplazo limpio y manual para evitar doble codificación en la API de WhatsApp
+        $textoCodificado = str_replace(['+', ' '], ['%2B', '%20'], urlencode($mensaje));
+        $urlWhatsApp = "https://api.whatsapp.com/send?phone={$telefonoAdmin}&text={$textoCodificado}";
 
         return redirect()->away($urlWhatsApp);
     }
