@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Equipo;
 use App\Models\Cliente;
 
+
 class EquipoController extends Controller
 {
     public function storeAjax(Request $request)
@@ -26,30 +27,34 @@ class EquipoController extends Controller
     }
 
     public function storeFast(Request $request)
-{
-    try {
-        $cliente = Cliente::create([
-            'nombre' => $request->nombre,
-            'ubicacion' => $request->ubicacion,
-        ]);
+    {
+        try {
+            // 1. Crear el cliente asegurando campos obligatorios por defecto si la BD los pide
+            $cliente = Cliente::create([
+                'nombre' => $request->nombre,
+                'ubicacion' => $request->ubicacion,
+                'cedula' => $request->cedula ?? 'N/A',
+                'telefono' => $request->telefono ?? 'N/A',
+            ]);
 
-        $equipo = Equipo::create([
-            'cliente_id' => $cliente->id,
-            'tipo_equipo' => $request->tipo_equipo,
-            'marca' => $request->marca,
-        ]);
+            // 2. Crear el equipo asociado
+            $equipo = Equipo::create([
+                'cliente_id' => $cliente->id,
+                'tipo_equipo' => $request->tipo_equipo,
+                'marca' => $request->marca,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'cliente' => $cliente,
-            'equipo' => $equipo
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
+            return response()->json([
+                'success' => true,
+                'cliente' => $cliente,
+                'equipo' => $equipo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
-}
     
 }
