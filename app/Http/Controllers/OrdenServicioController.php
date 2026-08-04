@@ -115,7 +115,11 @@ class OrdenServicioController extends Controller
             'tipo_servicio' => 'Correctivo',
             'diagnostico_tecnico' => 'Falla reportada por el cliente: ' . $request->falla,
             'trabajo_realizado' => 'Pendiente por revisión en sitio.',
-            'user_id' => \App\Models\User::exists() ? \App\Models\User::first()->id : null,
+            'user_id' => \App\Models\User::first()?->id ?? \App\Models\User::create([
+                'name' => 'Técnico Principal',
+                'email' => 'tecnico@leotec.com',
+                'password' => bcrypt('password')
+            ])->id,
         ]);
     
         // 4. Enlace directo y automatizado para la acción del técnico en sitio
