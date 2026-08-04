@@ -6,12 +6,13 @@ use App\Models\OrdenServicio;
 use App\Http\Controllers\EquipoController;
 
 // 1. LA RAÍZ (/) ES PARA EL CLIENTE: Formulario público de solicitud
-Route::get('/', [OrdenServicioController::class, 'formCliente'])->name('cliente.solicitar');
-Route::post('/', [OrdenServicioController::class, 'guardarSolicitud'])->name('cliente.store');
+Route::get('/', [OrdenServicioController::class, 'formCliente'])->name('cliente.solicitud');
+Route::post('/solicitud/guardar', [OrdenServicioController::class, 'guardarSolicitud'])->name('cliente.guardar');
 
 // 2. EL PANEL DEL TÉCNICO: Creación de órdenes técnicas con presiones y voltajes
 Route::get('/ordenes/crear', [OrdenServicioController::class, 'create'])->name('ordenes.create');
 Route::post('/ordenes', [OrdenServicioController::class, 'store'])->name('ordenes.store');
+Route::post('/ordenes/store', [OrdenServicioController::class, 'store']); // Alias de compatibilidad
 
 // Historial y detalles de órdenes para el técnico
 Route::get('/ordenes', function () {
