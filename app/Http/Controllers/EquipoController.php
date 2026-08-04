@@ -29,10 +29,10 @@ class EquipoController extends Controller
     public function storeFast(Request $request)
     {
         try {
-            // 1. Crear el cliente asegurando campos obligatorios por defecto si la BD los pide
+            // 1. Crear el cliente mapeando la ubicación del formulario a la dirección de la BD
             $cliente = Cliente::create([
                 'nombre' => $request->nombre,
-                'ubicacion' => $request->ubicacion,
+                'direccion' => $request->ubicacion,
                 'cedula' => $request->cedula ?? 'N/A',
                 'telefono' => $request->telefono ?? 'N/A',
             ]);
