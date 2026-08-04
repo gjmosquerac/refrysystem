@@ -28,8 +28,8 @@ class OrdenServicioController extends Controller
             'marca'       => $request->marca ?? 'No especificada',
         ];
 
-        // Número exacto quemado en formato internacional perfecto para WhatsApp
-        $telefonoLimpio = "584245652208";
+        // Número correcto del técnico en formato internacional fijo
+        $telefonoLimpio = "58424652208";
 
         $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
                    "*Cliente:* {$cliente->nombre}\n" .
