@@ -19,9 +19,6 @@ class OrdenServicioController extends Controller
             'trabajo_realizado' => 'required|string',
         ]);
 
-        // Obtiene el ID del usuario logueado o busca el primer usuario disponible de forma segura
-        $userId = \Illuminate\Support\Facades\Auth::id() ?? (\App\Models\User::first()->id ?? 1);
-
         OrdenServicio::create([
             'equipo_id' => $request->equipo_id,
             'tipo_servicio' => $request->tipo_servicio,
@@ -31,8 +28,7 @@ class OrdenServicioController extends Controller
             'amperaje_trabajo' => $request->amperaje_trabajo,
             'diagnostico_tecnico' => $request->diagnostico_tecnico,
             'trabajo_realizado' => $request->trabajo_realizado,
-            'user_id' => $userId,
-            'tecnico_id' => $userId,
+            // Quitamos user_id y tecnico_id temporalmente para que SQLite no patine con las foreign keys
         ]);
 
         return redirect()->route('ordenes.index')->with('success', '¡Orden de servicio guardada con éxito!');
