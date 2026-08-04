@@ -10,6 +10,15 @@ use App\Models\User;
 
 class OrdenServicioController extends Controller
 {
+    /**
+     * Muestra el formulario para crear una nueva orden con los equipos cargados.
+     */
+    public function create()
+    {
+        $equipos = Equipo::with('cliente')->get();
+        return view('ordenes.crear', compact('equipos'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
