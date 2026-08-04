@@ -1,4 +1,3 @@
-<!-- resources/views/cliente/redireccion-whatsapp.blade.php -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,10 +23,11 @@
     </div>
 
     <script>
-        const telefono = "{{ str_replace(['+', ' '], '', $telefono) }}";
+        // Quemamos el número limpio sin signos ni espacios para garantizar compatibilidad total con la app de escritorio y móvil
+        const telefono = "58424194489";
         const mensaje = @json($mensaje);
 
-        const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
+        const urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
         
         document.getElementById('whatsapp-link').href = urlWhatsApp;
 
