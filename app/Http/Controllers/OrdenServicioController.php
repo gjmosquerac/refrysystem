@@ -8,9 +8,6 @@ use App\Models\User;
 
 class OrdenServicioController extends Controller
 {
-    /**
-     * Almacena una nueva orden de servicio desde el formulario de campo interno.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -20,7 +17,6 @@ class OrdenServicioController extends Controller
             'trabajo_realizado' => 'required|string',
         ]);
 
-        // Asigna de forma segura un ID de usuario válido que exista en la base de datos
         $userId = User::first()->id ?? 1;
 
         OrdenServicio::create([
@@ -36,20 +32,14 @@ class OrdenServicioController extends Controller
             'tecnico_id' => $userId,
         ]);
 
-        return redirect()->route('ordenes.index')->with('success', '¡Orden de servicio guardada con éxito!');
+        return redirect()->route('ordenes.index')->with('success', '¡Orden guardada con éxito!');
     }
 
-    /**
-     * Muestra la vista del formulario público para que el cliente solicite servicio.
-     */
     public function formCliente()
     {
         return view('cliente.solicitud');
     }
 
-    /**
-     * Procesa la solicitud del cliente y lo redirige al WhatsApp del técnico.
-     */
     public function guardarSolicitud(Request $request)
     {
         $request->validate([
@@ -70,9 +60,6 @@ class OrdenServicioController extends Controller
         return redirect()->away("https://wa.me/{$telefonoTecnico}?text={$mensaje}");
     }
 
-    /**
-     * Genera el enlace automatizado de WhatsApp para el cliente desde la orden registrada.
-     */
     public function enviarWhatsApp(OrdenServicio $orden)
     {
         $orden->load('equipo.cliente');
