@@ -125,33 +125,10 @@ class OrdenServicioController extends Controller
                    "*Falla Reportada:* {$request->falla}\n\n" .
                    "_Atiende la orden desde el sistema web._";
 
-        // Usamos http_build_query para que construya la URL de manera profesional y sin errores de codificación
-        $urlWhatsApp = "https://api.whatsapp.com/send?" . http_build_query([
-            'phone' => $telefonoAdmin,
-            'text' => $mensaje
-        ], '', '&', PHP_QUERY_RFC3986);
-
-        return redirect()->away($urlWhatsApp);
-    }
-
-    public function enviarWhatsApp(OrdenServicio $orden)
-    {
-        $orden->load('equipo.cliente');
-        
-        $telefono = $orden->equipo->cliente->telefono ?? '';
-        $telefonoCliente = preg_replace('/[^0-9]/', '', $telefono);
-        if (strlen($telefonoCliente) == 10 && substr($telefonoCliente, 0, 1) != '58') {
-            $telefonoCliente = '58' . $telefonoCliente;
-        }
-
-        $mensaje = "Saludos *" . ($orden->equipo->cliente->nombre ?? 'Cliente') . "*, le escribe *LeoTec Refrigeración* (Carora).\n" .
-                   "Resumen de su servicio N°: 000{$orden->id}\n" .
-                   "🔧 *Equipo:* {$orden->equipo->tipo_equipo} - {$orden->equipo->marca}\n" .
-                   "🛠️ *Trabajo:* {$orden->trabajo_realizado}\n" .
-                   "¡Gracias por confiar en nuestros servicios!";
-
-        $urlWhatsApp = "https://wa.me/{$telefonoCliente}?text=" . rawurlencode($mensaje);
-
-        return redirect()->away($urlWhatsApp);
+        // Pasamos las variables limpias a una vista de redirección con JS
+        return view('cliente.redireccion-whatsapp', [
+            'telefono' => $telefonoAdmin,
+            'mensaje' => $mensaje
+        ]);
     }
 }
