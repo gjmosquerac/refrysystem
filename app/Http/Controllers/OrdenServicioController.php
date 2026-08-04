@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\OrdenServicio;
+use App\Models\User;
 
 class OrdenServicioController extends Controller
 {
@@ -19,6 +20,9 @@ class OrdenServicioController extends Controller
             'trabajo_realizado' => 'required|string',
         ]);
 
+        // Asigna de forma segura un ID de usuario válido que exista en la base de datos
+        $userId = User::first()->id ?? 1;
+
         OrdenServicio::create([
             'equipo_id' => $request->equipo_id,
             'tipo_servicio' => $request->tipo_servicio,
@@ -28,6 +32,8 @@ class OrdenServicioController extends Controller
             'amperaje_trabajo' => $request->amperaje_trabajo,
             'diagnostico_tecnico' => $request->diagnostico_tecnico,
             'trabajo_realizado' => $request->trabajo_realizado,
+            'user_id' => $userId,
+            'tecnico_id' => $userId,
         ]);
 
         return redirect()->route('ordenes.index')->with('success', '¡Orden de servicio guardada con éxito!');
