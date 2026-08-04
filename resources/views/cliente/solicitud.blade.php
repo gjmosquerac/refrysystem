@@ -3,58 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Servicio - LeoTec Refrigeración | Carora</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Solicitar Servicio - LeoTec Refrigeración</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
-
-    <div class="max-w-md w-full bg-white shadow-xl rounded-2xl p-6 space-y-4">
-        <!-- Encabezado -->
-        <div class="text-center border-b pb-3">
-            <h1 class="font-bold text-xl text-blue-600">❄️ LeoTec Refrigeración</h1>
-            <p class="text-xs text-slate-500 font-semibold">Solicitud de Servicio Técnico • Carora</p>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen py-10">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-cyan-400">LeoTec Refrigeración</h1>
+            <p class="text-sm text-gray-400">Solicitud de Servicio Técnico • Carora</p>
         </div>
 
-        <!-- Formulario del Cliente -->
-        <form action="{{ route('cliente.store') }}" method="POST" class="space-y-3 text-xs">
+        @if ($errors->any())
+            <div class="mb-4 bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-lg text-sm">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>• {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('cliente.guardar') }}" method="POST" class="space-y-4">
             @csrf
-            
             <div>
-                <label class="font-bold uppercase text-slate-700">Nombre y Apellido:</label>
-                <input type="text" name="nombre" required class="w-full mt-1 p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej. Juan Pérez">
+                <label class="block text-sm font-medium text-gray-300 mb-1">NOMBRE Y APELLIDO:</label>
+                <input type="text" name="nombre" required value="{{ old('nombre') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400" placeholder="Ej. Juan Pérez">
             </div>
 
             <div>
-                <label class="font-bold uppercase text-slate-700">Teléfono / WhatsApp:</label>
-                <input type="text" name="telefono" required class="w-full mt-1 p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej. 0414-1234567">
+                <label class="block text-sm font-medium text-gray-300 mb-1">TELÉFONO / WHATSAPP:</label>
+                <input type="text" name="telefono" required value="{{ old('telefono') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400" placeholder="Ej. 0414 1234567">
             </div>
 
             <div>
-                <label class="font-bold uppercase text-slate-700">Dirección o Sector:</label>
-                <input type="text" name="direccion" required class="w-full mt-1 p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej. Urbanización La Floresta, Carora">
+                <label class="block text-sm font-medium text-gray-300 mb-1">DIRECCIÓN O SECTOR:</label>
+                <input type="text" name="direccion" required value="{{ old('direccion') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400" placeholder="Ej. Urbanización La Floresta, Carora">
             </div>
 
             <div>
-                <label class="font-bold uppercase text-slate-700">Tipo de Servicio:</label>
-                <select name="tipo_servicio" required class="w-full mt-1 p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <option value="" disabled selected>Seleccione el servicio...</option>
-                    <option value="Mantenimiento Preventivo">Mantenimiento Preventivo</option>
-                    <option value="Instalación">Instalación</option>
-                    <option value="Reparación / Revisión de Falla">Reparación / Revisión de Falla</option>
-                    <option value="Carga de Gas">Carga de Gas</option>
+                <label class="block text-sm font-medium text-gray-300 mb-1">TIPO DE SERVICIO / EQUIPO:</label>
+                <select name="tipo_equipo" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400">
+                    <option value="">Seleccione el servicio...</option>
+                    <option value="Aire Acondicionado - Mantenimiento Preventivo">Aire Acondicionado - Mantenimiento Preventivo</option>
+                    <option value="Aire Acondicionado - Correctivo / Falla">Aire Acondicionado - Reparación (Correctivo)</option>
+                    <option value="Nevera / Refrigeración - Revisión">Nevera / Refrigeración - Revisión</option>
                 </select>
             </div>
 
             <div>
-                <label class="font-bold uppercase text-slate-700">Detalles del Equipo y Falla:</label>
-                <textarea name="detalles_falla" rows="3" required class="w-full mt-1 p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej. Aire Split Haier 12k no enfría bien y parpadea..."></textarea>
+                <label class="block text-sm font-medium text-gray-300 mb-1">DETALLES DEL EQUIPO Y FALLA:</label>
+                <textarea name="falla" required rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400" placeholder="Ej. Aire Split Haier 12k no enfría bien y parpadea...">{{ old('falla') }}</textarea>
             </div>
 
-            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow uppercase tracking-wider text-xs flex items-center justify-center gap-1.5 transition-all">
-                <span>💬</span> Enviar Solicitud por WhatsApp
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                <span>💬 ENVIAR SOLICITUD POR WHATSAPP</span>
             </button>
         </form>
     </div>
-
 </body>
 </html>
