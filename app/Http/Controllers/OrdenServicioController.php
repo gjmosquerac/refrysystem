@@ -4,23 +4,44 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\OrdenServicio;
+use App\Models\Cliente;
+use App\Models\Equipo;
 use App\Models\User;
 
 class OrdenServicioController extends Controller
 {
-    /**
-     * Almacena una nueva orden de servicio de forma segura.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'equipo_id' => 'required|exists:equipos,id',
             'tipo_servicio' => 'required|string',
             'diagnostico_tecnico' => 'required|string',
             'trabajo_realizado' => 'required|string',
         ]);
 
-        // Asegura que exista un usuario para evitar fallas por llaves foráneas
+        $equipoId = $request->equipo_id;
+
+        // Si llenaron los campos de registro rápido, creamos el cliente y el equipo primero
+        if ($request->filled('nuevo_cliente_nombre') && $request->filled('nuevo_tipo_equipo')) {
+            $cliente = Cliente::create([
+                'nombre' => $request->nuevo_cliente_nombre,
+                'telefono' => $request->nuevo_cliente_telefono ?? 'Sin teléfono',
+                'direccion' => 'Registrado en campo',
+            ]);
+
+            $equipo = Equipo::create([
+                'cliente_id' => $cliente->id,
+                'tipo_equipo' => $request->nuevo_tipo_equipo,
+                'marca' => $request->nuevo_marca_equipo ?? 'Genérica',
+            ]);
+
+            $equipoId = $equipo->id;
+        }
+
+        if (!$equipoId) {
+            return back()->withErrors(['equipo_id' => 'Debe seleccionar un equipo existente o registrar uno nuevo.'])->withInput();
+        }
+
+        // Asegura un usuario válido para la orden
         $user = User::first();
         if (!$user) {
             $user = User::create([
@@ -31,7 +52,7 @@ class OrdenServicioController extends Controller
         }
 
         OrdenServicio::create([
-            'equipo_id' => $request->equipo_id,
+            'equipo_id' => $equipoId,
             'tipo_servicio' => $request->tipo_servicio,
             'presion_baja' => $request->presion_baja,
             'presion_alta' => $request->presion_alta,
@@ -45,17 +66,11 @@ class OrdenServicioController extends Controller
         return redirect()->route('ordenes.index')->with('success', '¡Orden guardada con éxito!');
     }
 
-    /**
-     * Muestra la vista del formulario público para el cliente.
-     */
     public function formCliente()
     {
         return view('cliente.solicitud');
     }
 
-    /**
-     * Procesa la solicitud del cliente hacia WhatsApp.
-     */
     public function guardarSolicitud(Request $request)
     {
         $request->validate([
@@ -76,9 +91,6 @@ class OrdenServicioController extends Controller
         return redirect()->away("https://wa.me/{$telefonoTecnico}?text={$mensaje}");
     }
 
-    /**
-     * Envía WhatsApp al cliente con el resumen de la orden.
-     */
     public function enviarWhatsApp(OrdenServicio $orden)
     {
         $orden->load('equipo.cliente');
