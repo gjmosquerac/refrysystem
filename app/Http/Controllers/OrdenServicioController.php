@@ -126,16 +126,20 @@ class OrdenServicioController extends Controller
         $urlAtender = route('ordenes.create', ['equipo_id' => $equipo->id]);
 
         // 5. Estructura del mensaje de alerta viral/técnico directo a tu WhatsApp
-        $telefonoAdmin = "58424194489"; // Tu número de técnico oficial
-        $mensaje = "❄️ *LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD* ❄️\n\n" .
-                   "👤 *Cliente:* {$cliente->nombre}\n" .
-                   "📱 *Teléfono:* {$cliente->telefono}\n" .
-                   "📍 *Ubicación:* {$cliente->direccion}\n" .
-                   "⚠️ *Falla Reportada:* {$request->falla}\n" .
-                   "🔢 *Nro de Orden:* #000{$orden->id}\n\n" .
-                   "⚡ *Gestionar en el Sistema:* {$urlAtender}";
+        $telefonoAdmin = "58424194489"; 
+        
+        $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
+                   "*Cliente:* {$cliente->nombre}\n" .
+                   "*Teléfono:* {$cliente->telefono}\n" .
+                   "*Dirección:* {$cliente->direccion}\n" .
+                   "*Tipo de Equipo:* {$equipo->tipo_equipo}\n" .
+                   "*Marca:* {$equipo->marca}\n" .
+                   "*Falla Reportada:* {$request->falla}\n\n" .
+                   "_Atiende la orden desde el sistema web._";
 
-        $whatsappUrl = "https://wa.me/{$telefonoAdmin}?text=" . urlencode($mensaje);
+        $urlWhatsApp = "https://api.whatsapp.com/send?phone={$telefonoAdmin}&text=" . urlencode($mensaje);
+
+        return redirect($urlWhatsApp);
 
         // Disparo limpio hacia la central de WhatsApp
         return redirect()->away($whatsappUrl);
