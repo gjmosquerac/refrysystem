@@ -2,40 +2,31 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrdenServicioController;
-use App\Models\Equipo;
 use App\Models\OrdenServicio;
 use App\Http\Controllers\EquipoController;
 
-// Ruta principal: Carga el formulario móvil de campo directamente en la raíz '/' usando el controlador
-Route::get('/', [OrdenServicioController::class, 'create']);
+// 1. LA RAÍZ (/) ES PARA EL CLIENTE: Formulario público de solicitud
+Route::get('/', [OrdenServicioController::class, 'formCliente'])->name('cliente.solicitar');
+Route::post('/', [OrdenServicioController::class, 'guardarSolicitud'])->name('cliente.store');
 
-// Ruta explícita nombrada para crear ordenes (soluciona cualquier redirección a ordenes.create)
+// 2. EL PANEL DEL TÉCNICO: Creación de órdenes técnicas con presiones y voltajes
 Route::get('/ordenes/crear', [OrdenServicioController::class, 'create'])->name('ordenes.create');
-
-// Ruta que procesa el formulario mediante POST
 Route::post('/ordenes', [OrdenServicioController::class, 'store'])->name('ordenes.store');
 
-// Historial de órdenes de servicio
+// Historial y detalles de órdenes para el técnico
 Route::get('/ordenes', function () {
     $ordenes = OrdenServicio::with(['equipo.cliente', 'tecnico'])->latest()->get();
     return view('ordenes.index', compact('ordenes'));
 })->name('ordenes.index');
 
-// Detalle individual de una orden
 Route::get('/ordenes/{id}', function ($id) {
     $orden = OrdenServicio::with(['equipo.cliente', 'tecnico'])->findOrFail($id);
     return view('ordenes.show', compact('orden'));
 })->name('ordenes.show');
 
-// Rutas públicas para el formulario de solicitud del cliente
-Route::get('/solicitar-servicio', [OrdenServicioController::class, 'formCliente'])->name('cliente.solicitar');
-Route::post('/solicitar-servicio', [OrdenServicioController::class, 'guardarSolicitud'])->name('cliente.store');
-
 // Ruta para disparar el envío de WhatsApp desde el panel del técnico
 Route::get('/ordenes/{orden}/whatsapp', [OrdenServicioController::class, 'enviarWhatsApp'])->name('ordenes.whatsapp');
 
-// Ruta para el almacenamiento rápido de equipos vía AJAX
+// Rutas AJAX rápidas
 Route::post('/equipos/store-ajax', [EquipoController::class, 'storeAjax'])->name('equipos.storeAjax');
-
-// Ruta para el registro rápido vía AJAX
 Route::post('/clientes/store-fast', [EquipoController::class, 'storeFast'])->name('clientes.store.fast');
