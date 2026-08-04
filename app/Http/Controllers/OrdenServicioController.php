@@ -28,7 +28,6 @@ class OrdenServicioController extends Controller
             'amperaje_trabajo' => $request->amperaje_trabajo,
             'diagnostico_tecnico' => $request->diagnostico_tecnico,
             'trabajo_realizado' => $request->trabajo_realizado,
-            // Quitamos user_id y tecnico_id temporalmente para que SQLite no patine con las foreign keys
         ]);
 
         return redirect()->route('ordenes.index')->with('success', '¡Orden de servicio guardada con éxito!');
