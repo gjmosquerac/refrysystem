@@ -23,14 +23,15 @@
     </div>
 
     <script>
-        const telefono = "{{ $telefono }}";
+        // Limpiamos cualquier signo + o espacio para que la app móvil no dé error
+        const telefono = "{{ str_replace('+', '', $telefono) }}";
         const mensaje = @json($mensaje);
 
         const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
         
         document.getElementById('whatsapp-link').href = urlWhatsApp;
 
-        // Redirección automática inmediata
+        // Redirección automática inmediata sin errores
         window.location.href = urlWhatsApp;
     </script>
 </body>
