@@ -137,7 +137,7 @@ class OrdenServicioController extends Controller
                    "*Falla Reportada:* {$request->falla}\n\n" .
                    "_Atiende la orden desde el sistema web._";
 
-        $urlWhatsApp = "https://api.whatsapp.com/send?phone={$telefonoAdmin}&text=" . urlencode($mensaje);
+        $urlWhatsApp = "https://api.whatsapp.com/send?phone={$telefonoAdmin}&text=" . rawurlencode($mensaje);
 
         return redirect($urlWhatsApp);
 
