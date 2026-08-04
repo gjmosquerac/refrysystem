@@ -37,10 +37,12 @@ class EquipoController extends Controller
                 'telefono' => $request->telefono ?? 'N/A',
             ]);
 
+            // 2. Crear el equipo asociado con valores por defecto para los campos NOT NULL
             $equipo = Equipo::create([
                 'cliente_id' => $cliente->id,
                 'tipo_equipo' => $request->tipo_equipo,
                 'marca' => $request->marca,
+                'refrigerante' => $request->refrigerante ?? 'N/A', 
             ]);
 
             return response()->json([
