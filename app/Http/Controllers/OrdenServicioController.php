@@ -109,15 +109,15 @@ class OrdenServicioController extends Controller
             'refrigerante' => 'R22/R410A', // <--- METE ESTA LÍNEA AQUÍ MISMO
         ]);
 
-        // 3. Generar la orden inicial con estatus operativo pendiente
+        // 3. Generar la orden inicial con estatus
         $orden = OrdenServicio::create([
             'equipo_id' => $equipo->id,
             'tipo_servicio' => 'Correctivo',
             'diagnostico_tecnico' => 'Falla reportada por el cliente: ' . $request->falla,
-            'trabajo_realizado' => 'Pendiente por revisión técnica en sitio.',
-            'user_id' => User::first()->id ?? 1,
+            'trabajo_realizado' => 'Pendiente por revisión en sitio.',
+            'user_id' => \App\Models\User::exists() ? \App\Models\User::first()->id : null,
         ]);
-
+    
         // 4. Enlace directo y automatizado para la acción del técnico en sitio
         $urlAtender = route('ordenes.create', ['equipo_id' => $equipo->id]);
 
