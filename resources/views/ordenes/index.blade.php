@@ -1,46 +1,75 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial - RefriSystem</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 text-slate-800">
+@extends('layouts.app') {{-- O el layout que utilices --}}
 
-    <div class="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
-        <header class="bg-blue-600 text-white p-4 text-center font-bold text-lg shadow-md flex justify-between items-center">
-    <span>❄️ LeoTec Refrigeración</span>
-    <span class="text-xs bg-blue-700 px-3 py-1.5 rounded-lg">Carora</span>
-        </header>
-
-        <main class="p-4 flex-1 space-y-3">
-            @forelse($ordenes as $orden)
-                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-sm space-y-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{{ $orden->tipo_servicio }}</span>
-                            <h3 class="font-bold text-slate-800 mt-1">{{ $orden->equipo->tipo_equipo ?? 'Equipo' }} - {{ $orden->equipo->marca ?? '' }}</h3>
-                        </div>
-                        <span class="text-xs text-slate-400">{{ $orden->created_at->format('d/m/Y H:i') }}</span>
-                    </div>
-                    
-                    <p class="text-xs text-slate-600"><strong>Cliente:</strong> {{ $orden->equipo->cliente->nombre ?? 'N/D' }}</p>
-                    <p class="text-xs text-slate-600"><strong>Diagnóstico:</strong> {{ Str::limit($orden->diagnostico_tecnico, 60) }}</p>
-
-                    <div class="pt-2 flex justify-end">
-                        <a href="{{ route('ordenes.show', $orden->id) }}" class="text-xs bg-slate-800 text-white px-3 py-1.5 rounded-lg font-semibold">
-                            Ver Reporte Completo &rarr;
-                        </a>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center py-10 text-slate-400 text-sm">
-                    No hay órdenes registradas todavía.
-                </div>
-            @endforelse
-        </main>
+@section('content')
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Panel de Órdenes y Solicitudes</h1>
+        <a href="{{ route('ordenes.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            + Nueva Orden Manual
+        </a>
     </div>
 
-</body>
-</html>
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+            <p>{{ session('success') }}</p>
+        </div>
+    @endif
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Orden / Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente / Teléfono</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo / Falla</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estatus / Trabajo</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($ordenes as $orden)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            #000{{ $orden->id }}
+                            <div class="text-xs text-gray-500">{{ $orden->created_at->format('d/m/Y H:i') }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                            <div class="font-bold">{{ $orden->equipo->cliente->nombre ?? 'Sin cliente' }}</div>
+                            <div class="text-xs text-gray-500">{{ $orden->equipo->cliente->telefono ?? 'Sin teléfono' }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700">
+                            <div class="font-semibold">{{ $orden->equipo->tipo_equipo ?? 'Equipo' }} ({{ $orden->equipo->marca ?? 'N/D' }})</div>
+                            <div class="text-xs text-gray-500 truncate max-w-xs">{{ $orden->diagnostico_tecnico }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            @if(str_contains($orden->trabajo_realizado, 'Pendiente por revisión'))
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Solicitud Web (Pendiente)
+                                </span>
+                            @else
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Completado
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{{ route('ordenes.create', ['equipo_id' => $orden->equipo_id]) }}" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded mr-2">
+                                Atender / Cargar Presiones
+                            </a>
+                            <a href="{{ route('ordenes.whatsapp', $orden->id) }}" target="_blank" class="text-green-600 hover:text-green-900 bg-green-50 px-3 py-1 rounded">
+                                WhatsApp
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                            No hay órdenes ni solicitudes registradas todavía.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection

@@ -75,29 +75,60 @@ class OrdenServicioController extends Controller
         return redirect()->route('ordenes.index')->with('success', '¡Orden guardada con éxito!');
     }
 
+    // Muestra el formulario al cliente en la raíz (/)
     public function formCliente()
     {
-        return view('cliente.solicitud');
+        return view('cliente.solicitar');
     }
 
+    // Procesa la solicitud que hace el cliente en la web guardándola en BD
     public function guardarSolicitud(Request $request)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
             'telefono' => 'required|string|max:50',
-            'direccion' => 'required|string|max:255',
-            'detalles_falla' => 'required|string',
+            'direccion' => 'required|string',
+            'falla' => 'required|string',
         ]);
 
-        $mensaje = "Hola Leonardo, tengo una nueva solicitud de servicio técnico:%0A" .
-                   "👤 *Cliente:* {$request->nombre}%0A" .
-                   "📱 *Teléfono:* {$request->telefono}%0A" .
-                   "📍 *Dirección:* {$request->direccion}%0A" .
-                   "🔧 *Detalles / Falla:* {$request->detalles_falla}";
+        // 1. Crear o buscar al cliente
+        $cliente = Cliente::firstOrCreate(
+            ['telefono' => $request->telefono],
+            [
+                'nombre' => $request->nombre,
+                'direccion' => $request->direccion,
+            ]
+        );
 
-        $telefonoTecnico = "584245652208";
+        // 2. Registrar el equipo asociado (por defecto genérico si no lo especificó)
+        $equipo = Equipo::create([
+            'cliente_id' => $cliente->id,
+            'tipo_equipo' => $request->tipo_equipo ?? 'Aire Acondicionado / Nevera',
+            'marca' => $request->marca ?? 'Por definir',
+        ]);
 
-        return redirect()->away("https://wa.me/{$telefonoTecnico}?text={$mensaje}");
+        // 3. Crear la orden inicial con la falla reportada
+        $orden = OrdenServicio::create([
+            'equipo_id' => $equipo->id,
+            'tipo_servicio' => 'Correctivo',
+            'diagnostico_tecnico' => 'Falla reportada por el cliente: ' . $request->falla,
+            'trabajo_realizado' => 'Pendiente por revisión técnica en sitio.',
+            'user_id' => User::first()->id ?? 1,
+        ]);
+
+        // 4. Armar el mensaje para tu WhatsApp con los datos reales
+        $telefonoAdmin = "58424194489";
+        $mensaje = "Hola Leo, tengo una nueva solicitud de servicio técnico:\n" .
+                   "🔹 *Cliente:* {$cliente->nombre}\n" .
+                   "🔹 *Teléfono:* {$cliente->telefono}\n" .
+                   "🔹 *Dirección:* {$cliente->direccion}\n" .
+                   "🔹 *Detalles / Falla:* {$request->falla}\n" .
+                   "🔹 *Nro de Orden:* #{$orden->id}";
+
+        $whatsappUrl = "https://wa.me/{$telefonoAdmin}?text=" . urlencode($mensaje);
+
+        // Redirige directamente al WhatsApp para que se envíe la alerta
+        return redirect()->away($whatsappUrl);
     }
 
     public function enviarWhatsApp(OrdenServicio $orden)
