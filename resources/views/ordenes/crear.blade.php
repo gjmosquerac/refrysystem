@@ -16,9 +16,9 @@
             <form action="{{ route('ordenes.store') }}" method="POST" class="flex flex-col gap-4">
                 @csrf
 
-                <!-- SECCIÓN: REGISTRO RÁPIDO DE CLIENTE Y EQUIPO NUEVO -->
-                <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg flex flex-col gap-3">
-                    <span class="text-xs font-bold text-blue-600 uppercase">¿Cliente o equipo nuevo? Regístralo aquí</span>
+                <!-- SECCIÓN: REGISTRO RÁPIDO DE CLIENTE Y EQUIPO -->
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg flex flex-col gap-3">
+                    <span class="text-xs font-bold text-blue-700 uppercase">¿Cliente o equipo nuevo? Regístralo aquí</span>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div class="flex flex-col gap-1">
@@ -27,7 +27,7 @@
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="block text-[10px] font-bold text-slate-600 uppercase">Teléfono</label>
-                            <input type="text" name="nuevo_cliente_telefono" class="w-full p-2 bg-white border border-slate-300 rounded text-xs focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 0424-1234567">
+                            <input type="text" name="nuevo_cliente_telefono" class="w-full p-2 bg-white border border-slate-300 rounded text-xs focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 04241234567">
                         </div>
                     </div>
 
