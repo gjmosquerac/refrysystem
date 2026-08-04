@@ -17,6 +17,7 @@
         </header>
 
         <main class="p-4 flex-1">
+            <!-- FORMULARIO PRINCIPAL CON @csrf INCLUIDO -->
             <form action="{{ route('ordenes.store') }}" method="POST" class="space-y-4">
                 @csrf
                 
