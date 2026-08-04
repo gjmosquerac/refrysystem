@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrdenServicioController;
 use App\Models\Equipo;
 use App\Models\OrdenServicio;
+use App\Http\Controllers\EquipoController;
 
 // Ruta principal: Formulario móvil de campo
 Route::get('/', function () {
@@ -33,3 +34,5 @@ Route::post('/solicitar-servicio', [OrdenServicioController::class, 'guardarSoli
 
 // Ruta para disparar el envío de WhatsApp desde el panel del técnico
 Route::get('/ordenes/{orden}/whatsapp', [OrdenServicioController::class, 'enviarWhatsApp'])->name('ordenes.whatsapp');
+
+Route::post('/equipos/store-ajax', [EquipoController::class, 'storeAjax'])->name('equipos.storeAjax');
