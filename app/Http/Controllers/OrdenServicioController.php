@@ -76,9 +76,10 @@ class OrdenServicioController extends Controller
     }
 
     // Muestra el formulario al cliente en la raíz (/)
+    // Muestra el formulario al cliente en la raíz (/)
     public function formCliente()
     {
-        return view('cliente.solicitar');
+        return view('cliente.solicitud');
     }
 
     // Procesa la solicitud que hace el cliente en la web de forma automatizada
