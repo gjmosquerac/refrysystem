@@ -6,24 +6,24 @@ use App\Models\Equipo;
 use App\Models\OrdenServicio;
 use App\Http\Controllers\EquipoController;
 
-// Ruta principal: Formulario móvil de campo (Carga la vista de creación en la raíz)
+// Ruta principal: Carga el formulario móvil de campo directamente en la raíz '/'
 Route::get('/', function () {
     $equipos = Equipo::with('cliente')->get();
     return view('ordenes.crear', compact('equipos'));
-})->name('home');
+});
 
-// Ruta que procesa el formulario principal (POST)
+// Ruta que procesa el formulario mediante POST
 Route::post('/ordenes', [OrdenServicioController::class, 'store'])->name('ordenes.store');
 
-// Historial de órdenes (Cambiado a /ordenes/historial para evitar conflicto GET con la raíz o el formulario)
-Route::get('/ordenes/historial', function () {
-    $ordenes = OrdenServicio::with(['equipo.cliente'])->latest()->get();
+// Historial de órdenes de servicio
+Route::get('/ordenes', function () {
+    $ordenes = OrdenServicio::with(['equipo.cliente', 'tecnico'])->latest()->get();
     return view('ordenes.index', compact('ordenes'));
 })->name('ordenes.index');
 
 // Detalle individual de una orden
 Route::get('/ordenes/{id}', function ($id) {
-    $orden = OrdenServicio::with(['equipo.cliente'])->findOrFail($id);
+    $orden = OrdenServicio::with(['equipo.cliente', 'tecnico'])->findOrFail($id);
     return view('ordenes.show', compact('orden'));
 })->name('ordenes.show');
 
@@ -34,6 +34,8 @@ Route::post('/solicitar-servicio', [OrdenServicioController::class, 'guardarSoli
 // Ruta para disparar el envío de WhatsApp desde el panel del técnico
 Route::get('/ordenes/{orden}/whatsapp', [OrdenServicioController::class, 'enviarWhatsApp'])->name('ordenes.whatsapp');
 
-// Rutas AJAX para equipos y registro rápido
+// Ruta para el almacenamiento rápido de equipos vía AJAX
 Route::post('/equipos/store-ajax', [EquipoController::class, 'storeAjax'])->name('equipos.storeAjax');
+
+// Ruta para el registro rápido vía AJAX
 Route::post('/clientes/store-fast', [EquipoController::class, 'storeFast'])->name('clientes.store.fast');
