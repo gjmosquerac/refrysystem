@@ -81,7 +81,7 @@ class OrdenServicioController extends Controller
         return view('cliente.solicitar');
     }
 
-    // Procesa la solicitud que hace el cliente en la web guardándola en BD
+    // Procesa la solicitud que hace el cliente en la web de forma automatizada
     public function guardarSolicitud(Request $request)
     {
         $request->validate([
@@ -91,7 +91,7 @@ class OrdenServicioController extends Controller
             'falla' => 'required|string',
         ]);
 
-        // 1. Crear o buscar al cliente
+        // 1. Crear o buscar al cliente de manera inteligente
         $cliente = Cliente::firstOrCreate(
             ['telefono' => $request->telefono],
             [
@@ -100,14 +100,14 @@ class OrdenServicioController extends Controller
             ]
         );
 
-        // 2. Registrar el equipo asociado (por defecto genérico si no lo especificó)
+        // 2. Registrar el equipo asociado con parámetros base de refrigeración
         $equipo = Equipo::create([
             'cliente_id' => $cliente->id,
             'tipo_equipo' => $request->tipo_equipo ?? 'Aire Acondicionado / Nevera',
-            'marca' => $request->marca ?? 'Por definir',
+            'marca' => $request->marca ?? 'Genérica / Por definir',
         ]);
 
-        // 3. Crear la orden inicial con la falla reportada
+        // 3. Generar la orden inicial con estatus operativo pendiente
         $orden = OrdenServicio::create([
             'equipo_id' => $equipo->id,
             'tipo_servicio' => 'Correctivo',
@@ -116,18 +116,22 @@ class OrdenServicioController extends Controller
             'user_id' => User::first()->id ?? 1,
         ]);
 
-        // 4. Armar el mensaje para tu WhatsApp con los datos reales
-        $telefonoAdmin = "58424194489";
-        $mensaje = "Hola Leo, tengo una nueva solicitud de servicio técnico:\n" .
-                   "🔹 *Cliente:* {$cliente->nombre}\n" .
-                   "🔹 *Teléfono:* {$cliente->telefono}\n" .
-                   "🔹 *Dirección:* {$cliente->direccion}\n" .
-                   "🔹 *Detalles / Falla:* {$request->falla}\n" .
-                   "🔹 *Nro de Orden:* #{$orden->id}";
+        // 4. Enlace directo y automatizado para la acción del técnico en sitio
+        $urlAtender = route('ordenes.create', ['equipo_id' => $equipo->id]);
+
+        // 5. Estructura del mensaje de alerta viral/técnico directo a tu WhatsApp
+        $telefonoAdmin = "58424194489"; // Tu número de técnico oficial
+        $mensaje = "❄️ *LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD* ❄️\n\n" .
+                   "👤 *Cliente:* {$cliente->nombre}\n" .
+                   "📱 *Teléfono:* {$cliente->telefono}\n" .
+                   "📍 *Ubicación:* {$cliente->direccion}\n" .
+                   "⚠️ *Falla Reportada:* {$request->falla}\n" .
+                   "🔢 *Nro de Orden:* #000{$orden->id}\n\n" .
+                   "⚡ *Gestionar en el Sistema:* {$urlAtender}";
 
         $whatsappUrl = "https://wa.me/{$telefonoAdmin}?text=" . urlencode($mensaje);
 
-        // Redirige directamente al WhatsApp para que se envíe la alerta
+        // Disparo limpio hacia la central de WhatsApp
         return redirect()->away($whatsappUrl);
     }
 
