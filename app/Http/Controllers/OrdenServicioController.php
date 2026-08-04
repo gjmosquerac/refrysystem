@@ -8,6 +8,9 @@ use App\Models\User;
 
 class OrdenServicioController extends Controller
 {
+    /**
+     * Almacena una nueva orden de servicio de forma segura.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -17,8 +20,15 @@ class OrdenServicioController extends Controller
             'trabajo_realizado' => 'required|string',
         ]);
 
-        // Aseguramos un ID de usuario válido de forma ultra segura
-        $userId = \App\Models\User::first() ? \App\Models\User::first()->id : 1;
+        // Asegura que exista un usuario para evitar fallas por llaves foráneas
+        $user = User::first();
+        if (!$user) {
+            $user = User::create([
+                'name' => 'Técnico Principal',
+                'email' => 'tecnico@refrysystem.com',
+                'password' => bcrypt('password123'),
+            ]);
+        }
 
         OrdenServicio::create([
             'equipo_id' => $request->equipo_id,
@@ -29,12 +39,23 @@ class OrdenServicioController extends Controller
             'amperaje_trabajo' => $request->amperaje_trabajo,
             'diagnostico_tecnico' => $request->diagnostico_tecnico,
             'trabajo_realizado' => $request->trabajo_realizado,
-            'user_id' => $userId,
+            'user_id' => $user->id,
         ]);
 
         return redirect()->route('ordenes.index')->with('success', '¡Orden guardada con éxito!');
     }
 
+    /**
+     * Muestra la vista del formulario público para el cliente.
+     */
+    public function formCliente()
+    {
+        return view('cliente.solicitud');
+    }
+
+    /**
+     * Procesa la solicitud del cliente hacia WhatsApp.
+     */
     public function guardarSolicitud(Request $request)
     {
         $request->validate([
@@ -55,6 +76,9 @@ class OrdenServicioController extends Controller
         return redirect()->away("https://wa.me/{$telefonoTecnico}?text={$mensaje}");
     }
 
+    /**
+     * Envía WhatsApp al cliente con el resumen de la orden.
+     */
     public function enviarWhatsApp(OrdenServicio $orden)
     {
         $orden->load('equipo.cliente');
