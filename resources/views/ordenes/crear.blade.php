@@ -3,164 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>RefriSystem - Campo</title>
+    <title>Crear Orden de Servicio - RefrySystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-100 text-slate-800">
-
     <div class="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
-        <header class="bg-blue-600 text-white p-4 text-center font-bold text-lg shadow-md flex justify-between items-center">
-            <span>❄️ LeoTec Refrigeración</span>
-            <span class="text-xs bg-blue-700 px-3 py-1.5 rounded-lg">Carora</span>
+        <header class="bg-blue-600 text-white p-4 text-center font-bold text-lg">
+            Nueva Orden de Servicio
         </header>
 
         <main class="p-4 flex-1">
-            <!-- FORMULARIO PRINCIPAL CON @csrf INCLUIDO -->
-            <form action="{{ route('ordenes.store') }}" method="POST" class="space-y-4">
+            <form action="{{ route('ordenes.store') }}" method="POST" class="flex flex-col gap-4">
                 @csrf
-                
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Equipo / Cliente</label>
+
+                <div class="flex flex-col gap-1">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Equipo a Revisar</label>
                     <div class="flex gap-2">
-                        <select name="equipo_id" id="equipo_id" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-sm" required>
+                        <select name="equipo_id" id="equipo_id" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
                             <option value="">Seleccione equipo a revisar...</option>
-                            @foreach($equipos as $eq)
-                                <option value="{{ $eq->id }}">{{ $eq->tipo_equipo }} - {{ $eq->marca }} ({{ $eq->cliente->nombre ?? 'Sin cliente' }})</option>
-                            @endforeach
+                            @isset($equipos)
+                                @foreach($equipos as $eq)
+                                    <option value="{{ $eq->id }}">{{ $eq->tipo_equipo }} - {{ $eq->marca }} ({{ $eq->cliente->nombre ?? 'Sin cliente' }})</option>
+                                @endforeach
+                            @endisset
                         </select>
-                        
-                        <button type="button" onclick="toggleModal(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-xl shadow transition flex items-center justify-center shrink-0">
-                            <i class="fas fa-plus"></i>
-                        </button>
                     </div>
                 </div>
 
-                <div>
+                <div class="flex flex-col gap-1">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Tipo de Servicio</label>
-                    <select name="tipo_servicio" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-sm" required>
-                        <option value="Preventivo">Mantenimiento Preventivo</option>
-                        <option value="Correctivo">Mantenimiento Correctivo / Reparación</option>
+                    <select name="tipo_servicio" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <option value="Preventivo">Preventivo</option>
+                        <option value="Correctivo">Correctivo</option>
                         <option value="Instalación">Instalación</option>
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600">Presión Baja (PSI)</label>
-                        <input type="number" step="0.1" name="presion_baja" class="w-full mt-1 p-2 bg-white border rounded-lg text-sm" placeholder="Ej. 120">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="flex flex-col gap-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Presión Baja (PSI)</label>
+                        <input type="number" step="0.1" name="presion_baja" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 120">
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600">Presión Alta (PSI)</label>
-                        <input type="number" step="0.1" name="presion_alta" class="w-full mt-1 p-2 bg-white border rounded-lg text-sm" placeholder="Ej. 350">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600">Voltaje (V)</label>
-                        <input type="number" step="0.1" name="voltaje_entrada" class="w-full mt-1 p-2 bg-white border rounded-lg text-sm" placeholder="Ej. 220">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600">Amperaje (A)</label>
-                        <input type="number" step="0.1" name="amperaje_trabajo" class="w-full mt-1 p-2 bg-white border rounded-lg text-sm" placeholder="Ej. 8.5">
+                    <div class="flex flex-col gap-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Presión Alta (PSI)</label>
+                        <input type="number" step="0.1" name="presion_alta" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 350">
                     </div>
                 </div>
 
-                <div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="flex flex-col gap-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Voltaje de Entrada (V)</label>
+                        <input type="number" step="0.1" name="voltaje_entrada" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 220">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Amperaje de Trabajo (A)</label>
+                        <input type="number" step="0.1" name="amperaje_trabajo" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 8.5">
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Diagnóstico Técnico</label>
-                    <textarea name="diagnostico_tecnico" rows="2" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-sm" placeholder="Describa la falla encontrada..." required></textarea>
+                    <textarea name="diagnostico_tecnico" rows="3" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Describa la falla o diagnóstico..." required></textarea>
                 </div>
 
-                <div>
+                <div class="flex flex-col gap-1">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Trabajo Realizado</label>
-                    <textarea name="trabajo_realizado" rows="2" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-sm" placeholder="Limpieza de serpentín, ajuste..." required></textarea>
+                    <textarea name="trabajo_realizado" rows="3" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Describa el trabajo ejecutado..." required></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:bg-blue-700 transition uppercase tracking-wider text-sm">
-                    Guardar Orden de Servicio
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-lg shadow transition mt-2">
+                    Guardar y Generar Orden
                 </button>
             </form>
         </main>
     </div>
-
-    <!-- MODAL DE REGISTRO RÁPIDO -->
-    <div id="modalNuevo" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-            <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
-                <h3 class="font-bold text-sm uppercase tracking-wider">Nuevo Cliente / Equipo</h3>
-                <button type="button" onclick="toggleModal(false)" class="text-white hover:text-slate-200 text-lg">&times;</button>
-            </div>
-            
-            <form id="formFastStore" class="p-4 space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Nombre del Cliente</label>
-                    <input type="text" id="fast_nombre" name="nombre" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" required placeholder="Ej. Juan Pérez">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Ubicación / Sede</label>
-                    <input type="text" id="fast_ubicacion" name="ubicacion" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" required placeholder="Ej. Com. La Coromoto">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Tipo de Equipo</label>
-                    <input type="text" id="fast_tipo" name="tipo_equipo" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" required placeholder="Ej. Cava Cuarto / Split">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Marca</label>
-                    <input type="text" id="fast_marca" name="marca" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" required placeholder="Ej. Carrier / Haier">
-                </div>
-
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="toggleModal(false)" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl text-sm transition">Cancelar</button>
-                    <button type="submit" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function toggleModal(show) {
-            const modal = document.getElementById('modalNuevo');
-            if (show) {
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
-        }
-
-        document.getElementById('formFastStore').addEventListener('submit', function(e) {
-            e.preventDefault();
-            let formData = new FormData(this);
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch("{{ route('clientes.store.fast') }}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    let select = document.getElementById('equipo_id');
-                    let option = document.createElement('option');
-                    option.value = data.equipo.id;
-                    option.text = data.equipo.tipo_equipo + ' - ' + data.equipo.marca + ' (' + data.cliente.nombre + ')';
-                    option.selected = true;
-                    select.add(option);
-
-                    toggleModal(false);
-                    this.reset();
-                } else {
-                    alert('Error: ' + (data.message || 'No se pudo guardar'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error de conexión con el servidor.');
-            });
-        });
-    </script>
 </body>
 </html>
