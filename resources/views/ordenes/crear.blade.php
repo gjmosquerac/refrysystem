@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>RefriSystem - Campo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,7 +30,6 @@
                             @endforeach
                         </select>
                         
-                        <!-- Botón para abrir el modal rápido -->
                         <button type="button" onclick="toggleModal(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-xl shadow transition flex items-center justify-center shrink-0">
                             <i class="fas fa-plus"></i>
                         </button>
@@ -90,7 +90,6 @@
             </div>
             
             <form id="formFastStore" class="p-4 space-y-3">
-                @csrf
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase">Nombre del Cliente</label>
                     <input type="text" id="fast_nombre" name="nombre" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" required placeholder="Ej. Juan Pérez">
@@ -116,7 +115,6 @@
         </div>
     </div>
 
-    <!-- Script de control para el modal y AJAX -->
     <script>
         function toggleModal(show) {
             const modal = document.getElementById('modalNuevo');
@@ -130,13 +128,14 @@
         document.getElementById('formFastStore').addEventListener('submit', function(e) {
             e.preventDefault();
             let formData = new FormData(this);
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch("{{ route('clientes.store.fast') }}", {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 }
             })
@@ -153,12 +152,12 @@
                     toggleModal(false);
                     this.reset();
                 } else {
-                    alert('Hubo un error al registrar.');
+                    alert('Error: ' + (data.message || 'No se pudo guardar'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error de conexión.');
+                alert('Error de conexión con el servidor.');
             });
         });
     </script>

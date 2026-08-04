@@ -29,7 +29,7 @@ class EquipoController extends Controller
     public function storeFast(Request $request)
     {
         try {
-            // 1. Crear el cliente mapeando la ubicación del formulario a la dirección de la BD
+            // Mapea la 'ubicacion' del modal directamente a la columna 'direccion' de la BD
             $cliente = Cliente::create([
                 'nombre' => $request->nombre,
                 'direccion' => $request->ubicacion,
@@ -37,7 +37,6 @@ class EquipoController extends Controller
                 'telefono' => $request->telefono ?? 'N/A',
             ]);
 
-            // 2. Crear el equipo asociado
             $equipo = Equipo::create([
                 'cliente_id' => $cliente->id,
                 'tipo_equipo' => $request->tipo_equipo,
