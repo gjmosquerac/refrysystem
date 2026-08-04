@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/OrdenServicioController.php
 
 namespace App\Http\Controllers;
 
@@ -10,9 +11,6 @@ use App\Models\User;
 
 class OrdenServicioController extends Controller
 {
-    /**
-     * Muestra el formulario para crear una nueva orden con los equipos cargados.
-     */
     public function create()
     {
         $equipos = Equipo::with('cliente')->get();
@@ -29,7 +27,6 @@ class OrdenServicioController extends Controller
 
         $equipoId = $request->equipo_id;
 
-        // Si el usuario usó el bloque de registro rápido arriba
         if ($request->filled('nuevo_cliente_nombre') && $request->filled('nuevo_tipo_equipo')) {
             $cliente = Cliente::create([
                 'nombre' => $request->nuevo_cliente_nombre,
@@ -41,12 +38,12 @@ class OrdenServicioController extends Controller
                 'cliente_id' => $cliente->id,
                 'tipo_equipo' => $request->nuevo_tipo_equipo,
                 'marca' => $request->nuevo_marca_equipo ?? 'Genérica',
+                'refrigerante' => 'R22/R410A',
             ]);
 
             $equipoId = $equipo->id;
         }
 
-        // Validación lógica: si no seleccionó nada ni tampoco registró uno nuevo, se devuelve
         if (! $equipoId) {
             return back()->withErrors(['equipo_id' => 'Debe seleccionar un equipo existente o llenar los datos del cliente nuevo arriba.'])->withInput();
         }
@@ -75,14 +72,11 @@ class OrdenServicioController extends Controller
         return redirect()->route('ordenes.index')->with('success', '¡Orden guardada con éxito!');
     }
 
-    // Muestra el formulario al cliente en la raíz (/)
-    // Muestra el formulario al cliente en la raíz (/)
     public function formCliente()
     {
         return view('cliente.solicitud');
     }
 
-    // Procesa la solicitud que hace el cliente en la web de forma automatizada
     public function guardarSolicitud(Request $request)
     {
         $request->validate([
@@ -90,9 +84,9 @@ class OrdenServicioController extends Controller
             'telefono' => 'required|string|max:50',
             'direccion' => 'required|string',
             'falla' => 'required|string',
+            'tipo_equipo' => 'required|string',
         ]);
 
-        // 1. Crear o buscar al cliente de manera inteligente
         $cliente = Cliente::firstOrCreate(
             ['telefono' => $request->telefono],
             [
@@ -101,33 +95,27 @@ class OrdenServicioController extends Controller
             ]
         );
 
-        // 2. Registrar el equipo asociado con la falla del cliente
         $equipo = Equipo::create([
             'cliente_id' => $cliente->id,
             'tipo_equipo' => $request->tipo_equipo,
             'marca' => $request->marca ?? 'Genérica / Por definir',
-            'refrigerante' => 'R22/R410A', // <--- METE ESTA LÍNEA AQUÍ MISMO
+            'refrigerante' => 'R22/R410A',
         ]);
 
-        // 3. Generar la orden inicial con estatus
-        $orden = OrdenServicio::create([
+        OrdenServicio::create([
             'equipo_id' => $equipo->id,
             'tipo_servicio' => 'Correctivo',
             'diagnostico_tecnico' => 'Falla reportada por el cliente: ' . $request->falla,
             'trabajo_realizado' => 'Pendiente por revisión en sitio.',
-            'user_id' => \App\Models\User::first()?->id ?? \App\Models\User::create([
+            'user_id' => User::first()?->id ?? User::create([
                 'name' => 'Técnico Principal',
                 'email' => 'tecnico@leotec.com',
                 'password' => bcrypt('password')
             ])->id,
         ]);
-    
-        // 4. Enlace directo y automatizado para la acción del técnico en sitio
-        $urlAtender = route('ordenes.create', ['equipo_id' => $equipo->id]);
 
-        // 5. Estructura del mensaje de alerta viral/técnico directo a tu WhatsApp
         $telefonoAdmin = "58424194489"; 
-        
+
         $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
                    "*Cliente:* {$cliente->nombre}\n" .
                    "*Teléfono:* {$cliente->telefono}\n" .
@@ -139,10 +127,7 @@ class OrdenServicioController extends Controller
 
         $urlWhatsApp = "https://api.whatsapp.com/send?phone={$telefonoAdmin}&text=" . rawurlencode($mensaje);
 
-        return redirect($urlWhatsApp);
-
-        // Disparo limpio hacia la central de WhatsApp
-        return redirect()->away($whatsappUrl);
+        return redirect()->away($urlWhatsApp);
     }
 
     public function enviarWhatsApp(OrdenServicio $orden)
@@ -161,7 +146,7 @@ class OrdenServicioController extends Controller
                    "🛠️ *Trabajo:* {$orden->trabajo_realizado}\n" .
                    "¡Gracias por confiar en nuestros servicios!";
 
-        $urlWhatsApp = "https://wa.me/{$telefonoCliente}?text=" . urlencode($mensaje);
+        $urlWhatsApp = "https://wa.me/{$telefonoCliente}?text=" . rawurlencode($mensaje);
 
         return redirect()->away($urlWhatsApp);
     }
