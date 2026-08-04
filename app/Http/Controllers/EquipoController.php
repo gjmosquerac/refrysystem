@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Equipo;
+use App\Models\Cliente;
 
 class EquipoController extends Controller
 {
@@ -27,14 +28,12 @@ class EquipoController extends Controller
     public function storeFast(Request $request)
 {
     try {
-        // 1. Crear el cliente
-        $cliente = \App\Models\Cliente::create([
+        $cliente = Cliente::create([
             'nombre' => $request->nombre,
             'ubicacion' => $request->ubicacion,
         ]);
 
-        // 2. Crear el equipo asociado al cliente
-        $equipo = \App\Models\Equipo::create([
+        $equipo = Equipo::create([
             'cliente_id' => $cliente->id,
             'tipo_equipo' => $request->tipo_equipo,
             'marca' => $request->marca,
@@ -52,4 +51,5 @@ class EquipoController extends Controller
         ], 500);
     }
 }
+    
 }
