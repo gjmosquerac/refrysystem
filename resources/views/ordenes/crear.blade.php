@@ -48,11 +48,13 @@
                     <label class="block text-xs font-bold text-slate-700 uppercase">O Seleccione Equipo Existente</label>
                     <select name="equipo_id" id="equipo_id" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="">Seleccione equipo a revisar...</option>
-                        @isset($equipos)
+                        @if(isset($equipos) && count($equipos) > 0)
                             @foreach($equipos as $eq)
                                 <option value="{{ $eq->id }}">{{ $eq->tipo_equipo }} - {{ $eq->marca }} ({{ $eq->cliente->nombre ?? 'Sin cliente' }})</option>
                             @endforeach
-                        @endisset
+                        @else
+                            <option value="" disabled>No hay equipos registrados (usa el registro rápido arriba)</option>
+                        @endif
                     </select>
                 </div>
 

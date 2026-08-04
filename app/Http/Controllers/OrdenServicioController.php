@@ -29,7 +29,7 @@ class OrdenServicioController extends Controller
 
         $equipoId = $request->equipo_id;
 
-        // Si llenaron los campos de registro rápido, creamos el cliente y el equipo primero
+        // Si el usuario usó el bloque de registro rápido arriba
         if ($request->filled('nuevo_cliente_nombre') && $request->filled('nuevo_tipo_equipo')) {
             $cliente = Cliente::create([
                 'nombre' => $request->nuevo_cliente_nombre,
@@ -46,11 +46,11 @@ class OrdenServicioController extends Controller
             $equipoId = $equipo->id;
         }
 
-        if (!$equipoId) {
-            return back()->withErrors(['equipo_id' => 'Debe seleccionar un equipo existente o registrar uno nuevo.'])->withInput();
+        // Validación lógica: si no seleccionó nada ni tampoco registró uno nuevo, se devuelve
+        if (! $equipoId) {
+            return back()->withErrors(['equipo_id' => 'Debe seleccionar un equipo existente o llenar los datos del cliente nuevo arriba.'])->withInput();
         }
 
-        // Asegura un usuario válido para la orden
         $user = User::first();
         if (!$user) {
             $user = User::create([

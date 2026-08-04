@@ -6,11 +6,11 @@ use App\Models\Equipo;
 use App\Models\OrdenServicio;
 use App\Http\Controllers\EquipoController;
 
-// Ruta principal: Carga el formulario móvil de campo directamente en la raíz '/'
-Route::get('/', function () {
-    $equipos = Equipo::with('cliente')->get();
-    return view('ordenes.crear', compact('equipos'));
-});
+// Ruta principal: Carga el formulario móvil de campo directamente en la raíz '/' usando el controlador
+Route::get('/', [OrdenServicioController::class, 'create']);
+
+// Ruta explícita nombrada para crear ordenes (soluciona cualquier redirección a ordenes.create)
+Route::get('/ordenes/crear', [OrdenServicioController::class, 'create'])->name('ordenes.create');
 
 // Ruta que procesa el formulario mediante POST
 Route::post('/ordenes', [OrdenServicioController::class, 'store'])->name('ordenes.store');
