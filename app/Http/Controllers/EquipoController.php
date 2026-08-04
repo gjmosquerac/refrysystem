@@ -23,4 +23,33 @@ class EquipoController extends Controller
             'mensaje' => '¡Equipo registrado con éxito!'
         ]);
     }
+
+    public function storeFast(Request $request)
+{
+    try {
+        // 1. Crear el cliente
+        $cliente = \App\Models\Cliente::create([
+            'nombre' => $request->nombre,
+            'ubicacion' => $request->ubicacion,
+        ]);
+
+        // 2. Crear el equipo asociado al cliente
+        $equipo = \App\Models\Equipo::create([
+            'cliente_id' => $cliente->id,
+            'tipo_equipo' => $request->tipo_equipo,
+            'marca' => $request->marca,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'cliente' => $cliente,
+            'equipo' => $equipo
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 }

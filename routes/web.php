@@ -36,3 +36,8 @@ Route::post('/solicitar-servicio', [OrdenServicioController::class, 'guardarSoli
 Route::get('/ordenes/{orden}/whatsapp', [OrdenServicioController::class, 'enviarWhatsApp'])->name('ordenes.whatsapp');
 
 Route::post('/equipos/store-ajax', [EquipoController::class, 'storeAjax'])->name('equipos.storeAjax');
+
+// Ruta para el registro rápido vía AJAX
+Route::post('/clientes/store-fast', [EquipoController::class, 'storeFast'])->name('clientes.store.fast');
+
+Route::post('/clientes/store-fast', [EquipoController::class, 'storeFast'])->name('clientes.store.fast');
