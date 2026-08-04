@@ -17,15 +17,8 @@ class OrdenServicioController extends Controller
             'trabajo_realizado' => 'required|string',
         ]);
 
-        // Verificamos si existe al menos un usuario, si no, lo creamos
-        $user = User::first();
-        if (!$user) {
-            $user = User::create([
-                'name' => 'Técnico Principal',
-                'email' => 'tecnico@refrysystem.com',
-                'password' => bcrypt('password123'),
-            ]);
-        }
+        // Aseguramos un ID de usuario válido de forma ultra segura
+        $userId = \App\Models\User::first() ? \App\Models\User::first()->id : 1;
 
         OrdenServicio::create([
             'equipo_id' => $request->equipo_id,
@@ -36,16 +29,10 @@ class OrdenServicioController extends Controller
             'amperaje_trabajo' => $request->amperaje_trabajo,
             'diagnostico_tecnico' => $request->diagnostico_tecnico,
             'trabajo_realizado' => $request->trabajo_realizado,
-            'user_id' => $user->id,
-            'tecnico_id' => $user->id,
+            'user_id' => $userId,
         ]);
 
         return redirect()->route('ordenes.index')->with('success', '¡Orden guardada con éxito!');
-    }
-
-    public function formCliente()
-    {
-        return view('cliente.solicitud');
     }
 
     public function guardarSolicitud(Request $request)
