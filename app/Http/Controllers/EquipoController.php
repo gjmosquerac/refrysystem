@@ -29,7 +29,7 @@ class EquipoController extends Controller
     public function storeFast(Request $request)
     {
         try {
-            // Mapea la 'ubicacion' del modal directamente a la columna 'direccion' de la BD
+            // 1. Crear el cliente mapeando la ubicación a la dirección
             $cliente = Cliente::create([
                 'nombre' => $request->nombre,
                 'direccion' => $request->ubicacion,
@@ -37,12 +37,12 @@ class EquipoController extends Controller
                 'telefono' => $request->telefono ?? 'N/A',
             ]);
 
-            // 2. Crear el equipo asociado con valores por defecto para los campos NOT NULL
+            // 2. Crear el equipo incluyendo el refrigerante por defecto para evitar el error NOT NULL
             $equipo = Equipo::create([
                 'cliente_id' => $cliente->id,
                 'tipo_equipo' => $request->tipo_equipo,
                 'marca' => $request->marca,
-                'refrigerante' => $request->refrigerante ?? 'N/A', 
+                'refrigerante' => $request->refrigerante ?? 'N/A',
             ]);
 
             return response()->json([
@@ -56,6 +56,5 @@ class EquipoController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
-    }
-    
+    }    
 }
