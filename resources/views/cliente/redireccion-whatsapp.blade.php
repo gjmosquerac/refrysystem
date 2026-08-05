@@ -9,7 +9,7 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
     <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700 text-center space-y-4">
         <h2 class="text-xl font-bold text-emerald-400">¡Solicitud Registrada con Éxito!</h2>
-        <p class="text-sm text-slate-300">Abriendo WhatsApp automáticamente para enviar la alerta al técnico...</p>
+        <p class="text-sm text-slate-300">Abriendo WhatsApp automáticamente...</p>
         
         <div class="flex justify-center">
             <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500"></div>
@@ -23,14 +23,11 @@
     </div>
 
     <script>
-        // Quemamos el número limpio sin signos ni espacios para garantizar compatibilidad total con la app de escritorio y móvil
-        const telefono = "58424194489";
-        const mensaje = @json($mensaje);
-
+        const telefono = "584245652208";
+        const mensaje = @json($mensaje ?? 'Nueva solicitud de servicio técnico');
         const urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
         
         document.getElementById('whatsapp-link').href = urlWhatsApp;
-
         window.location.href = urlWhatsApp;
     </script>
 </body>
