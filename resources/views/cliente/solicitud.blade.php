@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <form action="{{ route('cliente.guardar') }}" method="POST" class="space-y-4">
+        <form action="{{ route('solicitud.guardar') }}" method="POST" class="space-y-4">
             @csrf
             <div>
                 <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Nombre y Apellido</label>
