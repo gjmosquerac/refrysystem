@@ -8,20 +8,29 @@ class OrdenServicioController extends Controller
 {
     public function formCliente()
     {
-        // Verificamos si existe la vista 'cliente.solicitud', si no, la creamos al vuelo o buscamos index
         if (view()->exists('cliente.solicitud')) {
             return view('cliente.solicitud');
         }
-        
         if (view()->exists('ordenes.crear')) {
             return view('ordenes.crear');
         }
-
-        // Vista de respaldo por si acaso
         return view('welcome');
     }
 
+    // Método principal para guardar la orden
     public function guardar(Request $request)
+    {
+        return $this->procesarWhatsApp($request);
+    }
+
+    // Alias por si la ruta llama a guardarSolicitud
+    public function guardarSolicitud(Request $request)
+    {
+        return $this->procesarWhatsApp($request);
+    }
+
+    // Lógica central para limpiar número, armar mensaje y redirigir
+    private function procesarWhatsApp(Request $request)
     {
         $request->validate([
             'nombre'    => 'required|string|max:255',
