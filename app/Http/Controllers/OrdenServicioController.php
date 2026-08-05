@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class OrdenServicioController extends Controller
 {
+    public function formCliente()
+    {
+        return view('cliente.solicitud');
+    }
+
     public function guardar(Request $request)
     {
         $request->validate([
@@ -28,7 +33,7 @@ class OrdenServicioController extends Controller
             'marca'       => $request->marca ?? 'No especificada',
         ];
 
-        // Número correcto, exacto y verificado del técnico
+        // Número exacto y verificado del técnico en formato internacional
         $telefonoLimpio = "584245652208";
 
         $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
