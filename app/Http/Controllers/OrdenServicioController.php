@@ -28,8 +28,8 @@ class OrdenServicioController extends Controller
             'marca'       => $request->marca ?? 'No especificada',
         ];
 
-        // Número correcto del técnico en formato internacional fijo
-        $telefonoLimpio = "58424652208";
+        // Número correcto, exacto y verificado del técnico
+        $telefonoLimpio = "584245652208";
 
         $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
                    "*Cliente:* {$cliente->nombre}\n" .
