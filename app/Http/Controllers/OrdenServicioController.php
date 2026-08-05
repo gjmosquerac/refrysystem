@@ -6,6 +6,17 @@ use Illuminate\Http\Request;
 
 class OrdenServicioController extends Controller
 {
+    public function formCliente()
+    {
+        if (view()->exists('cliente.solicitud')) {
+            return view('cliente.solicitud');
+        }
+        if (view()->exists('ordenes.crear')) {
+            return view('ordenes.crear');
+        }
+        return view('welcome');
+    }
+
     public function guardarSolicitud(Request $request)
     {
         $telefonoLimpio = "584245652208";
