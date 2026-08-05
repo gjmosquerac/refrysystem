@@ -6,7 +6,22 @@ use Illuminate\Http\Request;
 
 class OrdenServicioController extends Controller
 {
+    public function index()
+    {
+        return $this->cargarVistaFormulario();
+    }
+
     public function formCliente()
+    {
+        return $this->cargarVistaFormulario();
+    }
+
+    public function create()
+    {
+        return $this->cargarVistaFormulario();
+    }
+
+    private function cargarVistaFormulario()
     {
         if (view()->exists('cliente.solicitud')) {
             return view('cliente.solicitud');
@@ -20,10 +35,10 @@ class OrdenServicioController extends Controller
     public function guardarSolicitud(Request $request)
     {
         $telefonoLimpio = "584245652208";
+        $urlSistema = url('/ordenes/crear');
 
-        $telefonoLimpio = "584245652208";
-        $urlSistema = url('/login');
-        $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
+        $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n" .
+                   "*Solicitud de Servicio Técnico A DOMICILIO*\n\n" .
                    "*Cliente:* {$request->nombre}\n" .
                    "*Teléfono:* {$request->telefono}\n" .
                    "*Dirección:* {$request->direccion}\n" .
