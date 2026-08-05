@@ -25,7 +25,7 @@
         @endif
 
         <form action="{{ route('solicitud.guardar') }}" method="POST" class="space-y-4">
-            @csrf
+                    @csrf
             <div>
                 <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Nombre y Apellido</label>
                 <input type="text" name="nombre" required placeholder="Ej. Guillermo Mosquera" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-emerald-500">
