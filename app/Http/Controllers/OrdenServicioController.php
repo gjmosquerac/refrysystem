@@ -21,8 +21,8 @@ class OrdenServicioController extends Controller
     {
         $telefonoLimpio = "584245652208";
 
-        $urlSistema = url('/ordenes');
-
+        $telefonoLimpio = "584245652208";
+        $urlSistema = url('/login');
         $mensaje = "*LEOTEC REFRIGERACIÓN - NUEVA SOLICITUD*\n\n" .
                    "*Cliente:* {$request->nombre}\n" .
                    "*Teléfono:* {$request->telefono}\n" .
