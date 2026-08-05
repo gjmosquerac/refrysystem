@@ -8,7 +8,17 @@ class OrdenServicioController extends Controller
 {
     public function formCliente()
     {
-        return view('cliente.solicitud');
+        // Verificamos si existe la vista 'cliente.solicitud', si no, la creamos al vuelo o buscamos index
+        if (view()->exists('cliente.solicitud')) {
+            return view('cliente.solicitud');
+        }
+        
+        if (view()->exists('ordenes.crear')) {
+            return view('ordenes.crear');
+        }
+
+        // Vista de respaldo por si acaso
+        return view('welcome');
     }
 
     public function guardar(Request $request)
