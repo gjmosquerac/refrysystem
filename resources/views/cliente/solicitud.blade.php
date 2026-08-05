@@ -11,7 +11,7 @@
     <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700">
         <div class="text-center mb-6">
             <h1 class="text-2xl font-bold text-emerald-400">LEOTEC REFRIGERACIÓN</h1>
-            <p class="text-sm text-slate-400">Solicitud de Servicio Técnico en Sitio</p>
+            <p class="text-sm text-slate-400">Solicitud de Servicio Técnico a Domicilio</p>
         </div>
 
         @if ($errors->any())
